@@ -1,24 +1,337 @@
-# Lumen PHP Framework
+# REST API Movie
+REST API sederhana untuk film
 
-[![Build Status](https://travis-ci.org/laravel/lumen-framework.svg)](https://travis-ci.org/laravel/lumen-framework)
-[![Total Downloads](https://img.shields.io/packagist/dt/laravel/lumen-framework)](https://packagist.org/packages/laravel/lumen-framework)
-[![Latest Stable Version](https://img.shields.io/packagist/v/laravel/lumen-framework)](https://packagist.org/packages/laravel/lumen-framework)
-[![License](https://img.shields.io/packagist/l/laravel/lumen)](https://packagist.org/packages/laravel/lumen-framework)
+## Install
 
-Laravel Lumen is a stunningly fast PHP micro-framework for building web applications with expressive, elegant syntax. We believe development must be an enjoyable, creative experience to be truly fulfilling. Lumen attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as routing, database abstraction, queueing, and caching.
+    composer install
+	php artisan migrate
 
-## Official Documentation
+## Run the app
 
-Documentation for the framework can be found on the [Lumen website](https://lumen.laravel.com/docs).
+    unicorn -p 7000
 
-## Contributing
+## Run the tests
 
-Thank you for considering contributing to Lumen! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+    ./run-tests.sh
 
-## Security Vulnerabilities
+# REST API
 
-If you discover a security vulnerability within Lumen, please send an e-mail to Taylor Otwell at taylor@laravel.com. All security vulnerabilities will be promptly addressed.
+The REST API to the example app is described below.
 
-## License
+## Get list of Things
 
-The Lumen framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Request
+
+`GET /thing/`
+
+    curl -i -H 'Accept: application/json' http://localhost:7000/thing/
+
+### Response
+
+    HTTP/1.1 200 OK
+    Date: Thu, 24 Feb 2011 12:36:30 GMT
+    Status: 200 OK
+    Connection: close
+    Content-Type: application/json
+    Content-Length: 2
+
+    []
+
+## Create a new Thing
+
+### Request
+
+`POST /thing/`
+
+    curl -i -H 'Accept: application/json' -d 'name=Foo&status=new' http://localhost:7000/thing
+
+### Response
+
+    HTTP/1.1 201 Created
+    Date: Thu, 24 Feb 2011 12:36:30 GMT
+    Status: 201 Created
+    Connection: close
+    Content-Type: application/json
+    Location: /thing/1
+    Content-Length: 36
+
+    {"id":1,"name":"Foo","status":"new"}
+
+## Get a specific Thing
+
+### Request
+
+`GET /thing/id`
+
+    curl -i -H 'Accept: application/json' http://localhost:7000/thing/1
+
+### Response
+
+    HTTP/1.1 200 OK
+    Date: Thu, 24 Feb 2011 12:36:30 GMT
+    Status: 200 OK
+    Connection: close
+    Content-Type: application/json
+    Content-Length: 36
+
+    {"id":1,"name":"Foo","status":"new"}
+
+## Get a non-existent Thing
+
+### Request
+
+`GET /thing/id`
+
+    curl -i -H 'Accept: application/json' http://localhost:7000/thing/9999
+
+### Response
+
+    HTTP/1.1 404 Not Found
+    Date: Thu, 24 Feb 2011 12:36:30 GMT
+    Status: 404 Not Found
+    Connection: close
+    Content-Type: application/json
+    Content-Length: 35
+
+    {"status":404,"reason":"Not found"}
+
+## Create another new Thing
+
+### Request
+
+`POST /thing/`
+
+    curl -i -H 'Accept: application/json' -d 'name=Bar&junk=rubbish' http://localhost:7000/thing
+
+### Response
+
+    HTTP/1.1 201 Created
+    Date: Thu, 24 Feb 2011 12:36:31 GMT
+    Status: 201 Created
+    Connection: close
+    Content-Type: application/json
+    Location: /thing/2
+    Content-Length: 35
+
+    {"id":2,"name":"Bar","status":null}
+
+## Get list of Things again
+
+### Request
+
+`GET /thing/`
+
+    curl -i -H 'Accept: application/json' http://localhost:7000/thing/
+
+### Response
+
+    HTTP/1.1 200 OK
+    Date: Thu, 24 Feb 2011 12:36:31 GMT
+    Status: 200 OK
+    Connection: close
+    Content-Type: application/json
+    Content-Length: 74
+
+    [{"id":1,"name":"Foo","status":"new"},{"id":2,"name":"Bar","status":null}]
+
+## Change a Thing's state
+
+### Request
+
+`PUT /thing/:id/status/changed`
+
+    curl -i -H 'Accept: application/json' -X PUT http://localhost:7000/thing/1/status/changed
+
+### Response
+
+    HTTP/1.1 200 OK
+    Date: Thu, 24 Feb 2011 12:36:31 GMT
+    Status: 200 OK
+    Connection: close
+    Content-Type: application/json
+    Content-Length: 40
+
+    {"id":1,"name":"Foo","status":"changed"}
+
+## Get changed Thing
+
+### Request
+
+`GET /thing/id`
+
+    curl -i -H 'Accept: application/json' http://localhost:7000/thing/1
+
+### Response
+
+    HTTP/1.1 200 OK
+    Date: Thu, 24 Feb 2011 12:36:31 GMT
+    Status: 200 OK
+    Connection: close
+    Content-Type: application/json
+    Content-Length: 40
+
+    {"id":1,"name":"Foo","status":"changed"}
+
+## Change a Thing
+
+### Request
+
+`PUT /thing/:id`
+
+    curl -i -H 'Accept: application/json' -X PUT -d 'name=Foo&status=changed2' http://localhost:7000/thing/1
+
+### Response
+
+    HTTP/1.1 200 OK
+    Date: Thu, 24 Feb 2011 12:36:31 GMT
+    Status: 200 OK
+    Connection: close
+    Content-Type: application/json
+    Content-Length: 41
+
+    {"id":1,"name":"Foo","status":"changed2"}
+
+## Attempt to change a Thing using partial params
+
+### Request
+
+`PUT /thing/:id`
+
+    curl -i -H 'Accept: application/json' -X PUT -d 'status=changed3' http://localhost:7000/thing/1
+
+### Response
+
+    HTTP/1.1 200 OK
+    Date: Thu, 24 Feb 2011 12:36:32 GMT
+    Status: 200 OK
+    Connection: close
+    Content-Type: application/json
+    Content-Length: 41
+
+    {"id":1,"name":"Foo","status":"changed3"}
+
+## Attempt to change a Thing using invalid params
+
+### Request
+
+`PUT /thing/:id`
+
+    curl -i -H 'Accept: application/json' -X PUT -d 'id=99&status=changed4' http://localhost:7000/thing/1
+
+### Response
+
+    HTTP/1.1 200 OK
+    Date: Thu, 24 Feb 2011 12:36:32 GMT
+    Status: 200 OK
+    Connection: close
+    Content-Type: application/json
+    Content-Length: 41
+
+    {"id":1,"name":"Foo","status":"changed4"}
+
+## Change a Thing using the _method hack
+
+### Request
+
+`POST /thing/:id?_method=POST`
+
+    curl -i -H 'Accept: application/json' -X POST -d 'name=Baz&_method=PUT' http://localhost:7000/thing/1
+
+### Response
+
+    HTTP/1.1 200 OK
+    Date: Thu, 24 Feb 2011 12:36:32 GMT
+    Status: 200 OK
+    Connection: close
+    Content-Type: application/json
+    Content-Length: 41
+
+    {"id":1,"name":"Baz","status":"changed4"}
+
+## Change a Thing using the _method hack in the url
+
+### Request
+
+`POST /thing/:id?_method=POST`
+
+    curl -i -H 'Accept: application/json' -X POST -d 'name=Qux' http://localhost:7000/thing/1?_method=PUT
+
+### Response
+
+    HTTP/1.1 404 Not Found
+    Date: Thu, 24 Feb 2011 12:36:32 GMT
+    Status: 404 Not Found
+    Connection: close
+    Content-Type: text/html;charset=utf-8
+    Content-Length: 35
+
+    {"status":404,"reason":"Not found"}
+
+## Delete a Thing
+
+### Request
+
+`DELETE /thing/id`
+
+    curl -i -H 'Accept: application/json' -X DELETE http://localhost:7000/thing/1/
+
+### Response
+
+    HTTP/1.1 204 No Content
+    Date: Thu, 24 Feb 2011 12:36:32 GMT
+    Status: 204 No Content
+    Connection: close
+
+
+## Try to delete same Thing again
+
+### Request
+
+`DELETE /thing/id`
+
+    curl -i -H 'Accept: application/json' -X DELETE http://localhost:7000/thing/1/
+
+### Response
+
+    HTTP/1.1 404 Not Found
+    Date: Thu, 24 Feb 2011 12:36:32 GMT
+    Status: 404 Not Found
+    Connection: close
+    Content-Type: application/json
+    Content-Length: 35
+
+    {"status":404,"reason":"Not found"}
+
+## Get deleted Thing
+
+### Request
+
+`GET /thing/1`
+
+    curl -i -H 'Accept: application/json' http://localhost:7000/thing/1
+
+### Response
+
+    HTTP/1.1 404 Not Found
+    Date: Thu, 24 Feb 2011 12:36:33 GMT
+    Status: 404 Not Found
+    Connection: close
+    Content-Type: application/json
+    Content-Length: 35
+
+    {"status":404,"reason":"Not found"}
+
+## Delete a Thing using the _method hack
+
+### Request
+
+`DELETE /thing/id`
+
+    curl -i -H 'Accept: application/json' -X POST -d'_method=DELETE' http://localhost:7000/thing/2/
+
+### Response
+
+    HTTP/1.1 204 No Content
+    Date: Thu, 24 Feb 2011 12:36:33 GMT
+    Status: 204 No Content
+    Connection: close
