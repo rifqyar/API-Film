@@ -2,27 +2,29 @@
 REST API sederhana untuk film
 
 ## Install
-
     composer install
+
+## Run Migration
 	php artisan migrate
 
 ## Run the app
+    php -S localhost:8080 -t public
 
-    unicorn -p 7000
-
-## Run the tests
-
-    ./run-tests.sh
+## Run unit tests
+    vendor/bin/phpunit
 
 # REST API
 
-The REST API to the example app is described below.
+REST API untuk movie
+> Note: sebelum menjalankan Endpoint harus mendapatkan token
+Endpoint get Token : 
+	curl --request GET \  --url http://localhost:81/api/get-token
 
-## Get list of Things
+## Get All Movies
 
 ### Request
 
-`GET /thing/`
+`GET /movies/`
 
     curl -i -H 'Accept: application/json' http://localhost:7000/thing/
 
