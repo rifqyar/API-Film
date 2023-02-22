@@ -3,6 +3,7 @@ REST API sederhana untuk film
 
 ## Install
     composer install
+    composer dump-autoload
 
 ## Run Migration
 	php artisan migrate
