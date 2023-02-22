@@ -16,9 +16,9 @@ REST API sederhana untuk film
 # REST API
 
 REST API untuk movie
-> Note: sebelum menjalankan Endpoint harus mendapatkan token
-Endpoint get Token : 
-	curl --request GET \  --url http://localhost:81/api/get-token
+> Note: setiap endpoint REST API Movie membutuhkan header token
+[Endpoint Get Token](#endpoint_get_token "Endpoint Get Token")
+
 
 ## Get All Movies
 
@@ -337,3 +337,9 @@ Endpoint get Token :
     Date: Thu, 24 Feb 2011 12:36:33 GMT
     Status: 204 No Content
     Connection: close
+
+
+
+`#endpoint_get_token`
+#### Request
+	curl --request GET \ --url http://localhost:81/api/get-token
