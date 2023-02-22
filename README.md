@@ -9,7 +9,7 @@ REST API sederhana untuk film
 	php artisan migrate
 
 ## Run the app
-    php -S localhost:8080 -t public
+    php -S localhost:81 -t public
 
 ## Run unit tests
     vendor/bin/phpunit
